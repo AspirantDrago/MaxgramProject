@@ -1,11 +1,43 @@
+name: maxgram
+
 services:
-    frontend:
-        image: "./Maxgramm"
-        container_name: frontend
+    backend:
+        image: maxgram-backend:local
         build:
-            context: .
-            dockerfile: Dockerfile.frontend
+            context: ./Maxgram.Backend
+            dockerfile: Dockerfile
+            target: final
+        restart: unless-stopped
+        environment:
+            ASPNETCORE_ENVIRONMENT: Production
+            ASPNETCORE_HTTP_PORTS: "8080"
+            ConnectionStrings__Default: "Data Source=/data/maxgram.db"
+            DataProtection__KeysPath: /data/keys
+        volumes:
+            - maxgram-data:/data
+        expose:
+            - "8080"
+        networks:
+            - app
+
+    frontend:
+        image: maxgram-frontend:local
+        build:
+            context: ./Maxgram.Frontend
+            dockerfile: Dockerfile
+            target: production
+        restart: unless-stopped
         ports:
             - "3000:80"
         depends_on:
             - backend
+        networks:
+            - app
+
+volumes:
+    maxgram-data:
+
+networks:
+    app:
+        driver: bridge
+
