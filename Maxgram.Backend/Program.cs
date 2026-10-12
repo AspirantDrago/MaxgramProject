@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Maxgram.Backend.Data;
 using Maxgram.Backend.Services;
 using Maxgram.Backend.Services.Interfaces;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,10 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/data/keys"))
+    .SetApplicationName("Maxgram");
 
 var app = builder.Build();
 
